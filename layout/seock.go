@@ -46,20 +46,24 @@ func (service *SeoCheckService) SeoCheckInit() Composite {
 func (service *SeoCheckService) SeoCheckStart() {
 	domain := strings.Split(SeoCheckConfig.Domain, "\r\n")
 	for _, obj := range domain {
-		var resp = map[string]int{}
-		for _, site := range []string{
-			fmt.Sprintf(`https://rank.chinaz.com/%s`, obj),
-			fmt.Sprintf(`https://rank.chinaz.com/sorank/%s`, obj),
-			fmt.Sprintf(`https://rank.chinaz.com/sogoupc/%s`, obj),
-			fmt.Sprintf(`https://rank.chinaz.com/smrank/%s`, obj),
-			fmt.Sprintf(`https://rank.chinaz.com/toutiao/%s`, obj),
-		} {
-			for key, ob := range service.ReqStart(obj, false, site) {
-				resp[key] = ob
-			}
-		}
-		service.sendData(resp, obj)
+		service.SeoCheckStartCollect(obj)
 	}
+}
+
+func (service *SeoCheckService) SeoCheckStartCollect(obj string) {
+	var resp = map[string]int{}
+	for _, site := range []string{
+		fmt.Sprintf(`https://rank.chinaz.com/%s`, obj),
+		fmt.Sprintf(`https://rank.chinaz.com/sorank/%s`, obj),
+		fmt.Sprintf(`https://rank.chinaz.com/sogoupc/%s`, obj),
+		fmt.Sprintf(`https://rank.chinaz.com/smrank/%s`, obj),
+		fmt.Sprintf(`https://rank.chinaz.com/toutiao/%s`, obj),
+	} {
+		for key, ob := range service.ReqStart(obj, false, site) {
+			resp[key] = ob
+		}
+	}
+	service.sendData(resp, obj)
 }
 
 func (service *SeoCheckService) sendData(d map[string]int, o string) {
