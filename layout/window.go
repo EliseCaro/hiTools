@@ -52,6 +52,7 @@ func (layout *WindowCustom) ToolsLeftDisplay() Composite {
 		Children: []Widget{
 			new(YpYunService).CropImage(),
 			new(IcpCheckService).IcpCheckInit(),
+			new(SeoCheckService).SeoCheckInit(),
 		},
 	}
 }

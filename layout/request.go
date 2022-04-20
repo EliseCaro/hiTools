@@ -97,6 +97,13 @@ func (service *RequestService) RespHtml(urls string) *RequestService {
 	return service
 }
 
+func (service *RequestService) RespHtmlSeo(urls, domain string) *RequestService {
+	service.Req, _ = http.NewRequest("GET", urls, nil)
+	service.Req.Header.Add("Host", "rank.chinaz.com")
+	service.Req.Header.Add("Referer", fmt.Sprintf("https://rank.chinaz.com/%s", domain))
+	return service
+}
+
 func (service *RequestService) TrimHtml(src string) string {
 	re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
 	src = re.ReplaceAllStringFunc(src, strings.ToLower)
@@ -114,12 +121,17 @@ func (service *RequestService) TrimHtml(src string) string {
 
 func (service *RequestService) proxyGetIp(proxy bool, proxyUrl string) *http.Client {
 	if proxy == true || ProxyCore == "" || len(ProxyCore) == 0 {
-		if resp, err := http.Get(proxyUrl); err != nil {
+		if len([]rune(proxyUrl)) <= 0 || proxyUrl == "" {
+			new(WindowCustom).ConsoleErron("请配置代理后再试！")
 			return nil
 		} else {
-			body, _ := ioutil.ReadAll(resp.Body)
-			defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
-			return service.processProxy(body)
+			if resp, err := http.Get(proxyUrl); err != nil {
+				return nil
+			} else {
+				body, _ := ioutil.ReadAll(resp.Body)
+				defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
+				return service.processProxy(body)
+			}
 		}
 	} else {
 		return service.processProxy([]byte(ProxyCore))
@@ -133,6 +145,7 @@ func (service *RequestService) processProxy(body []byte) *http.Client {
 	}
 	if _, ok := resp["code"]; ok == false || resp["code"].(float64) != 200 {
 		ProxyCore = ""
+		new(WindowCustom).ConsoleErron(fmt.Sprintf("获取代理失败；原因：%s", resp["msg"].(string)))
 		return nil
 	}
 	data := resp["data"].([]interface{})[0].(map[string]interface{})
