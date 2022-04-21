@@ -48,6 +48,7 @@ func (service *SeoCheckService) SeoCheckStart() {
 	for _, obj := range domain {
 		service.SeoCheckStartCollect(obj)
 	}
+	new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`%d个域名查询全部完成！请注意查看控制台数据~`, len(domain)))
 }
 
 func (service *SeoCheckService) SeoCheckStartCollect(obj string) {
