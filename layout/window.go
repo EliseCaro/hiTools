@@ -25,7 +25,7 @@ func (layout *WindowCustom) ConsoleSuccess(str string) {
 	var date = fmt.Sprintf(`%s => `, time.Unix(time.Now().Unix(), 0).Format("2006-01-02 15:04:05"))
 	var strs = fmt.Sprintf("%s%s\r\n", date, str)
 	for index, val := range text {
-		if index < 20 && val != "" {
+		if index < 1000 && val != "" {
 			strs += fmt.Sprintf("%s\r\n", val)
 		}
 	}
@@ -66,11 +66,13 @@ func (layout *WindowCustom) ToolsRightDisplay() Composite {
 				AssignTo: &outTESuccess, ReadOnly: true, Text: "",
 				Background: SolidColorBrush{Color: walk.RGB(0, 0, 0)},
 				TextColor:  walk.RGB(255, 255, 255),
+				VScroll:    true,
 			},
 			TextEdit{
 				AssignTo: &outTEErron, ReadOnly: true, Text: "",
 				Background: SolidColorBrush{Color: walk.RGB(0, 0, 0)},
 				TextColor:  walk.RGB(199, 37, 78),
+				VScroll:    true,
 			},
 		},
 	}
