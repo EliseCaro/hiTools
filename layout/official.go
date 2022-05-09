@@ -3,6 +3,7 @@ package layout
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"path/filepath"
@@ -44,7 +45,7 @@ func (service *OfficialService) OfficialInit() Composite {
 func (service *OfficialService) OfficialCheckStart() {
 	domain := strings.Split(OfficialCheckConfig.Domain, "\r\n")
 	for _, obj := range domain {
-		service.OfficialRequest(obj, false)
+		service.OfficialRequest(service.OfficialDomainPrefix(obj), false)
 	}
 	new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`%d个域名查询全部完成！请注意查看控制台数据~`, len(domain)))
 }
@@ -56,7 +57,27 @@ func (service *OfficialService) OfficialRequest(domain string, proxy bool) {
 		new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]查询失败；重试中。。。`, domain))
 		service.OfficialRequest(domain, true)
 	}
-	fmt.Println(string(body))
+	var isOfficial bool
+	if dom, err := goquery.NewDocumentFromReader(strings.NewReader(string(body))); err == nil {
+		dom.Find("#content_left").Find("div[tpl=se_com_default]").Each(func(i int, selection *goquery.Selection) {
+			if strings.Contains(selection.Text(), "官方") {
+				isOfficial = true
+			}
+		})
+	}
+	if isOfficial == true {
+		new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`域名[%s]存在官网标识！`, domain))
+	} else {
+		new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]不存在官网标识！`, domain))
+	}
+}
+
+func (service *OfficialService) OfficialDomainPrefix(domain string) string {
+	if strings.Contains(domain, "www") {
+		return domain
+	} else {
+		return fmt.Sprintf(`www.%s`, domain)
+	}
 }
 
 func (service *OfficialService) OfficialCheckConfigSet() bool {

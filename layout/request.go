@@ -108,7 +108,6 @@ func (service *RequestService) RespOfficial(urls, doamin string) *RequestService
 	q.Add("wd", fmt.Sprintf(`site:%s`, doamin))
 	service.Req.URL.RawQuery = q.Encode()
 	service.Req.Header.Add("Host", "www.baidu.com")
-	fmt.Println(service.Req.URL.String())
 	service.Req.Header.Add("Referer", service.Req.URL.String())
 	return service
 }
