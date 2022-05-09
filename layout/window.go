@@ -53,6 +53,7 @@ func (layout *WindowCustom) ToolsLeftDisplay() Composite {
 			new(YpYunService).CropImage(),
 			new(IcpCheckService).IcpCheckInit(),
 			new(SeoCheckService).SeoCheckInit(),
+			new(OfficialService).OfficialInit(),
 		},
 	}
 }

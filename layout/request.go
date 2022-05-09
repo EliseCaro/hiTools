@@ -17,38 +17,6 @@ type RequestService struct {
 	Req *http.Request
 }
 
-// GetReq Get请求
-func (service *RequestService) GetReq(urls string) ([]byte, error) {
-	client := &http.Client{}
-	request, err := http.NewRequest("GET", urls, nil)
-	if err != nil {
-		return []byte{}, err
-	}
-	request.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-	request.Header.Add("Accept-Language", "ja,zh-CN;q=0.8,zh;q=0.6")
-	request.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0")
-	response, err := client.Do(request)
-	defer func(Body io.ReadCloser) { _ = Body.Close() }(response.Body)
-	body, _ := ioutil.ReadAll(response.Body)
-	return body, nil
-}
-
-func (service *RequestService) requestCustom(proxy bool, proxyUrl string) (body []byte) { // 自定义请求
-	if httpClient := service.proxyGetIp(proxy, proxyUrl); httpClient != nil {
-		service.Req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36")
-		resp, err := httpClient.Do(service.Req)
-		if err != nil || resp.Body == nil {
-			return service.requestCustom(true, proxyUrl)
-		}
-		body, _ = ioutil.ReadAll(resp.Body)
-		defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
-		return
-	} else {
-		time.Sleep(10 * time.Second) // 获取代理错误等待10s
-		return service.requestCustom(true, proxyUrl)
-	}
-}
-
 // TextConfig 读取文件text
 func (service *RequestService) TextConfig(local string) map[string]string {
 	var context string
@@ -78,6 +46,7 @@ func (service *RequestService) Config2Maps(str string) map[string]string {
 	return maps
 }
 
+// CreateConfig 创建配置文件
 func (service *RequestService) CreateConfig(name string, context string) bool {
 	f, err := os.Create(name)
 	if err == nil {
@@ -92,11 +61,59 @@ func (service *RequestService) CreateConfig(name string, context string) bool {
 	return false
 }
 
-func (service *RequestService) RespHtml(urls string) *RequestService {
+// GetReq Get请求 用于又拍云获取图片信息
+func (service *RequestService) GetReq(urls string) ([]byte, error) {
+	client := &http.Client{}
+	request, err := http.NewRequest("GET", urls, nil)
+	if err != nil {
+		return []byte{}, err
+	}
+	request.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	request.Header.Add("Accept-Language", "ja,zh-CN;q=0.8,zh;q=0.6")
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0")
+	response, err := client.Do(request)
+	defer func(Body io.ReadCloser) { _ = Body.Close() }(response.Body)
+	body, _ := ioutil.ReadAll(response.Body)
+	return body, nil
+}
+
+// 基本自定义请求库公用
+func (service *RequestService) requestCustom(proxy bool, proxyUrl string) (body []byte) { // 自定义请求
+	if httpClient := service.proxyGetIp(proxy, proxyUrl); httpClient != nil {
+		service.Req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36")
+		resp, err := httpClient.Do(service.Req)
+		if err != nil || resp.Body == nil {
+			return service.requestCustom(true, proxyUrl)
+		}
+		body, _ = ioutil.ReadAll(resp.Body)
+		defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
+		return
+	} else {
+		time.Sleep(10 * time.Second) // 获取代理错误等待10s
+		return service.requestCustom(true, proxyUrl)
+	}
+}
+
+// RespHtmlIcp 组装备案查询请求头
+func (service *RequestService) RespHtmlIcp(urls string) *RequestService {
 	service.Req, _ = http.NewRequest("GET", urls, nil)
 	return service
 }
 
+// RespOfficial 组装官网标志查询请求头
+func (service *RequestService) RespOfficial(urls, doamin string) *RequestService {
+	service.Req, _ = http.NewRequest("GET", urls, nil)
+	q := service.Req.URL.Query()
+	q.Add("ie", "UTF-8")
+	q.Add("wd", fmt.Sprintf(`site:%s`, doamin))
+	service.Req.URL.RawQuery = q.Encode()
+	service.Req.Header.Add("Host", "www.baidu.com")
+	fmt.Println(service.Req.URL.String())
+	service.Req.Header.Add("Referer", service.Req.URL.String())
+	return service
+}
+
+// RespHtmlSeo 组装权重查询请求头
 func (service *RequestService) RespHtmlSeo(urls, domain string) *RequestService {
 	service.Req, _ = http.NewRequest("GET", urls, nil)
 	service.Req.Header.Add("Host", "rank.chinaz.com")

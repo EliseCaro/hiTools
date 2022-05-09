@@ -51,7 +51,7 @@ func (service *IcpCheckService) IcpCheckStart() {
 
 func (service *IcpCheckService) ReqStart(domain string, proxy bool) {
 	urls := fmt.Sprintf(`https://www.beianx.cn/search/%s`, domain)
-	body := new(RequestService).RespHtml(urls).requestCustom(proxy, IcpCheckConfig.Proxy)
+	body := new(RequestService).RespHtmlIcp(urls).requestCustom(proxy, IcpCheckConfig.Proxy)
 	if len(body) == 0 || string(body) == "" {
 		new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]查询失败；重试中。。。`, domain))
 		service.ReqStart(domain, true)
