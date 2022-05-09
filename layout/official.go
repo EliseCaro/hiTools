@@ -65,7 +65,8 @@ func (service *OfficialService) OfficialRequest(domain string, proxy bool) {
 	var ChEn string
 	if dom, err := goquery.NewDocumentFromReader(strings.NewReader(string(body))); err == nil {
 		dom.Find("#content_left").Find("div[tpl=se_com_default]").EachWithBreak(func(i int, selection *goquery.Selection) bool {
-			if strings.Contains(selection.Text(), "官方") {
+			var text = selection.Find(".c-gap-left-small").Text()
+			if len([]rune(text)) > 0 && text != "" {
 				isOfficial = true
 				ChEn = strings.Replace(selection.Find(".c-color-gray").Text(), "/", "", -1)
 			}
