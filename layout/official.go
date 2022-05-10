@@ -69,6 +69,8 @@ func (service *OfficialService) OfficialRequest(domain string, proxy bool) {
 			if len([]rune(text)) > 0 && text != "" && strings.Contains(text, "官方") {
 				isOfficial = true
 				ChEn = strings.Replace(selection.Find(".c-color-gray").Text(), "/", "", -1)
+			} else {
+				ChEn = strings.Replace(selection.Find(".c-color-gray").Text(), "/", "", -1)
 			}
 			return !isOfficial
 		})
@@ -76,7 +78,7 @@ func (service *OfficialService) OfficialRequest(domain string, proxy bool) {
 	if isOfficial == true {
 		new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`域名[%s]官网标识;链接性质：[%s]`, domain, ChEn))
 	} else {
-		new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]不存在官网标识！`, domain))
+		new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]不存在官网标识;链接性质：[%s]`, domain, ChEn))
 	}
 }
 
