@@ -7,7 +7,9 @@ import (
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"unicode"
 )
 
 type OfficialService struct{}
@@ -78,8 +80,21 @@ func (service *OfficialService) OfficialRequest(domain string, proxy bool) {
 	if isOfficial == true {
 		new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`域名[%s]官网标识;链接性质：[%s]`, domain, ChEn))
 	} else {
-		new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]不存在官网标识;链接性质：[%s]`, domain, ChEn))
+		if service.IsChineseChar(ChEn) {
+			new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`域名[%s]链接性质：[%s]`, domain, ChEn))
+		} else {
+			new(WindowCustom).ConsoleErron(fmt.Sprintf(`域名[%s]不存在官网标识;链接性质：[%s]`, domain, ChEn))
+		}
 	}
+}
+
+func (service *OfficialService) IsChineseChar(str string) bool {
+	for _, r := range str {
+		if unicode.Is(unicode.Scripts["Han"], r) || (regexp.MustCompile("[\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]").MatchString(string(r))) {
+			return true
+		}
+	}
+	return false
 }
 
 func (service *OfficialService) OfficialDomainPrefix(domain string) string {
