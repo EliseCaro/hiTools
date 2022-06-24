@@ -1,5 +1,5 @@
-github.com/EliseCaro/go_image v0.2.3 h1:T1BFnEEkVKiibJwiH+RP6K8/cDnUYtQO1CeqEX1IRDY=
-github.com/EliseCaro/go_image v0.2.3/go.mod h1:JDRdtpYUrxKz2nNOfyhjefJ35KkjBq8MF0xdaG1oDjg=
+github.com/EliseCaro/go_image v0.0.2 h1:5MDkQjcxnhUW3vxDx29mBm1511dHnLbih3jor7L+bnM=
+github.com/EliseCaro/go_image v0.0.2/go.mod h1:JDRdtpYUrxKz2nNOfyhjefJ35KkjBq8MF0xdaG1oDjg=
 github.com/PuerkitoBio/goquery v1.8.0 h1:PJTF7AmFCFKk1N6V6jmKfrNH9tV5pNE6lZMkG0gta/U=
 github.com/PuerkitoBio/goquery v1.8.0/go.mod h1:ypIiRMtY7COPGk+I/YbZLbxsxn9g5ejnI2HSMtkjZvI=
 github.com/andybalholm/cascadia v1.3.1 h1:nhxRkql1kdYCc8Snf7D5/D3spOX+dBgjA6u8x004T2c=
