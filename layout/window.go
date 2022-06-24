@@ -54,6 +54,7 @@ func (layout *WindowCustom) ToolsLeftDisplay() Composite {
 			new(IcpCheckService).IcpCheckInit(),
 			new(SeoCheckService).SeoCheckInit(),
 			new(OfficialService).OfficialInit(),
+			new(BaiduService).BaiduSdk(),
 		},
 	}
 }

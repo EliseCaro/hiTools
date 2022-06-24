@@ -3,11 +3,12 @@ module hiTools
 go 1.17
 
 require (
+	github.com/EliseCaro/go_image v0.2.3
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/hunterhug/go_image v1.0.1
 	github.com/lxn/walk v0.0.0-20210112085537-c389da54e794
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 	github.com/upyun/go-sdk/v3 v3.0.2
+	golang.org/x/text v0.3.7
 )
 
 require (

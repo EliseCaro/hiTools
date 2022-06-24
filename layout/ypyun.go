@@ -3,7 +3,7 @@ package layout
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hunterhug/go_image"
+	"github.com/EliseCaro/go_image"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/upyun/go-sdk/v3/upyun"
