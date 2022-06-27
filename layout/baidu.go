@@ -245,6 +245,10 @@ func (service *BaiduService) PushRequest(context, kwd string) error {
 		return errors.New(fmt.Sprintf(`发布发起请求失败；%s`, err.Error()))
 	}
 	defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errors.New(fmt.Sprintf(`发布写入IO失败；%s`, err.Error()))
+	}
 	return nil
 }
 
