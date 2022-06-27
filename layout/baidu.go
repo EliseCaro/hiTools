@@ -33,7 +33,6 @@ type BaiduService struct{}
 type BaiduCheckValue struct {
 	Proxy      string // 代理
 	Urls       string // 采集地址
-	Push       string // 发布地址
 	Bucket     string //  又拍云空间名
 	Operator   string // 又拍云操作员
 	Password   string // 又拍云操作密码
@@ -97,7 +96,6 @@ func (service *BaiduService) DialogField() map[string]string {
 	return map[string]string{
 		"Proxy":      "小象代理地址",
 		"Urls":       "采集队列地址",
-		"Push":       "站点发布地址",
 		"Bucket":     "又拍云空间名",
 		"Operator":   "又拍云操作员",
 		"Password":   "又拍云操作密码",
