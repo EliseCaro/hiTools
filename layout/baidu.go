@@ -188,8 +188,9 @@ func (service *BaiduService) Collect(urls string, proxy bool) {
 		new(WindowCustom).ConsoleErron(fmt.Sprintf(`URL[%s]解析Html失败，换IP重试中`, urls))
 		service.Collect(urls, true)
 	} else {
-		if context := dom.Find(".index-module_articleWrap_2Zphx "); context == nil {
+		if context := dom.Find(".index-module_articleWrap_2Zphx "); context.Text() == "" {
 			new(WindowCustom).ConsoleErron(fmt.Sprintf(`URL[%s]触发百度验证，换IP重试中`, urls))
+			service.Collect(urls, true)
 		} else {
 			content, _ := context.Html()
 			content = service.filtrationHtml(content)
@@ -198,9 +199,10 @@ func (service *BaiduService) Collect(urls string, proxy bool) {
 			service.UpdateTxt(urls)
 			if len([]rune(service.TrimHtml(content))) <= 50 || len([]rune(service.TrimHtml(kwd))) <= 0 {
 				new(WindowCustom).ConsoleErron(fmt.Sprintf(`关键词[%s]解析内容或关键词为空，移除关键词，终止发布~`, kwd))
+			} else {
+				service.PushData(content, kwd) //启动发布
 			}
-			service.PushData(content, kwd) //
-			service.BaiduCollectStart()    // 开始下一轮
+			service.BaiduCollectStart() // 开始下一轮
 		}
 	}
 }
@@ -245,9 +247,12 @@ func (service *BaiduService) PushRequest(context, kwd string) error {
 		return errors.New(fmt.Sprintf(`发布发起请求失败；%s`, err.Error()))
 	}
 	defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
-	_, err = ioutil.ReadAll(resp.Body)
+	res, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return errors.New(fmt.Sprintf(`发布写入IO失败；%s`, err.Error()))
+	}
+	if strings.Contains(string(res), "发布成功") == false {
+		return errors.New(fmt.Sprintf("采集成功，但发布失败；body(%s)", string(res)))
 	}
 	return nil
 }
