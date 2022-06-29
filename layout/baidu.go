@@ -39,6 +39,7 @@ type BaiduCheckValue struct {
 	DomainUrls string // 又拍云
 	PushId     string // 发布分类ID
 	PushUrl    string // 发布推送地址
+	BaiduCooke string //百家号Cooke
 }
 
 var BaiduCheckConfig = new(BaiduCheckValue)
@@ -102,6 +103,7 @@ func (service *BaiduService) DialogField() map[string]string {
 		"DomainUrls": "又拍云链接域名",
 		"PushId":     "发布分类ID",
 		"PushUrl":    "发布推送地址",
+		"BaiduCooke": "百家号Cooke",
 	}
 }
 
@@ -148,6 +150,9 @@ func (service *BaiduService) BaiduCheckConfigLoad() {
 func (service *BaiduService) ReadCvsHandle(filename string) bool {
 	bs, _ := filepath.Abs("config")
 	config := fmt.Sprintf(`%s\baidu.txt`, bs)
+	if items := service.ReadTxt(config); len(items) > 0 {
+		return true
+	}
 	if fs, err := os.Open(filename); err != nil {
 		message := fmt.Sprintf(`文件[%s]解析失败，%s`, filename, err.Error())
 		new(WindowCustom).ConsoleErron(message)
@@ -177,7 +182,7 @@ func (service *BaiduService) ReadCvsHandle(filename string) bool {
 
 func (service *BaiduService) Collect(urls string, proxy bool) {
 	proxyUrls := BaiduCheckConfig.Proxy
-	request := new(RequestService).RespHtmlBaidu(urls)
+	request := new(RequestService).RespHtmlBaidu(urls, BaiduCheckConfig.BaiduCooke)
 	body := request.requestCustom(proxy, proxyUrls)
 	if len(body) == 0 || string(body) == "" {
 		new(WindowCustom).ConsoleErron(fmt.Sprintf(`URL[%s]采集失败，换IP重试中`, urls))
