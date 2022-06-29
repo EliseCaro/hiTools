@@ -129,6 +129,7 @@ func (service *BaiduService) BaiduCheckConfigSet() bool {
 			return false
 		} else {
 			text := strings.Replace(maps[index], ":", "#", -1)
+			text = strings.Replace(text, ";", "{U+FF1B}", -1)
 			context += fmt.Sprintf("%s:%s\r\n", index, text)
 		}
 	}
@@ -142,8 +143,9 @@ func (service *BaiduService) BaiduCheckConfigLoad() {
 	config := fmt.Sprintf(`%s\baidu.config`, bs)
 	cgf := new(RequestService).TextConfig(config)
 	mjson, _ := json.Marshal(cgf)
-	mjson = []byte(strings.Replace(string(mjson), "#", ":", -1))
-	_ = json.Unmarshal(mjson, &BaiduCheckConfig)
+	text := strings.Replace(string(mjson), "#", ":", -1)
+	text = strings.Replace(text, "{U+FF1B}", ";", -1)
+	_ = json.Unmarshal([]byte(text), &BaiduCheckConfig)
 }
 
 // ReadCvsHandle 将csv文件进行格式组装
