@@ -7,7 +7,6 @@ import (
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/upyun/go-sdk/v3/upyun"
-	"hiTools/layout/job"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -49,12 +48,13 @@ func (service *YpYunService) ListFiles() {
 			new(WindowCustom).ConsoleErron(fmt.Sprintf(`链接到又拍云失败;原因:%s`, erron.Error()))
 		}
 	}()
-	poolService := JobPoolService{}
+	//poolService := JobPoolService{}
 	for obj := range objsChan {
-		poolService.GetPool().PushTaskFunc(func(w *job.Pool, args ...interface{}) job.Flag {
-			service.CheckFileSize(args[0].(string))
-			return job.FLAG_OK
-		}, obj.Name)
+		service.CheckFileSize(obj.Name)
+		//poolService.GetPool().PushTaskFunc(func(w *job.Pool, args ...interface{}) job.Flag {
+		//	service.CheckFileSize(args[0].(string))
+		//	return job.FLAG_OK
+		//}, obj.Name)
 	}
 	new(WindowCustom).ConsoleSuccess(fmt.Sprintf(`[%s]空间[%s]资源处理完成;`, CropImageConfig.Bucket, CropImageConfig.Directory))
 }
